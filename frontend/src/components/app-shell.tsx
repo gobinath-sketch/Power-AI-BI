@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { LayoutDashboard, Database, FileBarChart, Calendar, Archive, Settings } from 'lucide-react';
 import { ChatDock } from '@/components/chat-dock';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import powerBiLogo from '../../assestimages/New_Power_BI_Logo.svg.png';
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -24,10 +26,17 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-[#fafafa]">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-56 border-r border-neutral-200 bg-white md:flex md:flex-col">
         <div className="border-b border-neutral-100 px-5 py-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-            Power AI
-          </p>
-                  </div>
+          <div className="flex items-center gap-2">
+            <Image
+              src={powerBiLogo}
+              alt="Power BI logo"
+              width={18}
+              height={18}
+              className="h-[18px] w-[18px] object-contain"
+            />
+            <p className="text-sm font-bold tracking-wide text-black">Power AI</p>
+          </div>
+        </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {nav.map(({ href, label, icon: Icon }) => (
             <Link
