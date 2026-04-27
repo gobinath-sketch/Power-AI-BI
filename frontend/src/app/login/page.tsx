@@ -81,10 +81,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(80%_60%_at_50%_0%,rgba(59,130,246,0.14),transparent_60%),radial-gradient(60%_60%_at_10%_15%,rgba(168,85,247,0.12),transparent_55%),linear-gradient(to_bottom,#f7fbff,#ffffff)]">
-      <div className="mx-auto flex min-h-screen max-w-6xl items-center px-5 py-10">
+    <div className="min-h-screen text-foreground [background-image:radial-gradient(70%_60%_at_20%_30%,rgba(251,146,60,0.22),transparent_62%),radial-gradient(65%_55%_at_55%_25%,rgba(236,72,153,0.16),transparent_60%),radial-gradient(60%_60%_at_45%_90%,rgba(168,85,247,0.10),transparent_65%),linear-gradient(to_bottom,#fff7f1,#fffdfb)]">
+      <div className="mx-auto flex min-h-screen max-w-7xl items-center px-5 py-12">
         <div className="relative w-full overflow-hidden rounded-[28px] border border-border bg-white/80 shadow-soft backdrop-blur">
-          <div className="grid min-h-[640px] grid-cols-1 lg:grid-cols-2">
+          <div className="grid min-h-[780px] grid-cols-1 lg:grid-cols-2">
             {/* Left: Login card */}
             <div
               className="relative flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-14"
@@ -95,7 +95,7 @@ export default function LoginPage() {
                 backgroundRepeat: 'no-repeat',
               }}
             >
-              <div className="mx-auto w-full max-w-md">
+              <div className="mx-auto w-full max-w-lg">
                 <div className="rounded-[26px] border border-white/40 bg-white/40 p-6 shadow-soft backdrop-blur-xl ring-1 ring-white/30">
                   <div className="flex items-center justify-start">
                     <Link href="/" aria-label="Back to home">

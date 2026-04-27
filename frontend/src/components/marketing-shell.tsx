@@ -19,14 +19,12 @@ export function MarketingShell({
   active?: string;
 }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground [background-image:radial-gradient(70%_60%_at_20%_30%,rgba(251,146,60,0.22),transparent_62%),radial-gradient(65%_55%_at_55%_25%,rgba(236,72,153,0.16),transparent_60%),radial-gradient(60%_60%_at_45%_90%,rgba(168,85,247,0.10),transparent_65%),linear-gradient(to_bottom,#fff7f1,#fffdfb)]">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_0%,rgba(34,211,238,0.18),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_20%_20%,rgba(168,85,247,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,rgba(34,211,238,0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:64px_64px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,rgba(255,255,255,0.35),transparent_55%)]" />
       </div>
 
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/70 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-black/5 bg-white/25 backdrop-blur-xl">
         <div className="flex w-full items-center justify-between gap-4 px-6 py-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="inline-flex h-6 w-6 items-center justify-center">
