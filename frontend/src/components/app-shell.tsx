@@ -25,10 +25,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-56 border-r border-neutral-200 bg-white md:flex md:flex-col">
         <div className="border-b border-neutral-100 px-5 py-6">
           <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-            Power BI
+            Power AI
           </p>
-          <p className="text-lg font-semibold text-neutral-900">Analytics</p>
-        </div>
+                  </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {nav.map(({ href, label, icon: Icon }) => (
             <Link
