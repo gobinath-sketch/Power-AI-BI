@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AtSign } from 'lucide-react';
+import { ArrowLeft, Lock, Mail } from 'lucide-react';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -95,28 +95,26 @@ export default function LoginPage() {
                 backgroundRepeat: 'no-repeat',
               }}
             >
+              <div className="absolute left-6 top-6 sm:left-10 sm:top-8">
+                <Link href="/" aria-label="Back to home">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-9 gap-2 rounded-2xl px-3 text-sm"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                </Link>
+              </div>
+
               <div className="mx-auto w-full max-w-lg">
                 <div className="rounded-[26px] border border-white/40 bg-white/40 p-6 shadow-soft backdrop-blur-xl ring-1 ring-white/30">
-                  <div className="flex items-center justify-start">
-                    <Link href="/" aria-label="Back to home">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="h-9 gap-2 rounded-2xl px-3 text-sm"
-                      >
-                        <ArrowLeft className="h-4 w-4" />
-                        Back
-                      </Button>
-                    </Link>
-                  </div>
-
-                  <div className="mt-4 text-center">
+                  <div className="text-center">
                     <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
                       Welcome back
                     </h1>
-                    <p className="mt-2 text-sm text-neutral-600">
-                      Good to see you again — let’s log you in.
-                    </p>
+                  
                   </div>
 
                   <div className="mt-5 flex rounded-2xl border border-white/40 bg-white/35 p-1 backdrop-blur-xl">
@@ -158,7 +156,7 @@ export default function LoginPage() {
                         Email
                       </label>
                       <div className="mt-2 flex items-center gap-2 rounded-xl border border-white/45 bg-white/35 px-3 py-2.5 backdrop-blur-xl">
-                        <AtSign className="h-4 w-4 text-neutral-400" />
+                        <Mail className="h-4 w-4 shrink-0 text-neutral-400" />
                         <input
                           className="w-full bg-transparent text-base outline-none placeholder:text-neutral-400"
                           placeholder="Enter your email"
@@ -175,11 +173,9 @@ export default function LoginPage() {
                         <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
                           Password
                         </label>
-                        <span className="text-xs font-medium text-neutral-500 hover:text-neutral-900">
-                          Forgot password
-                        </span>
                       </div>
                       <div className="mt-2 flex items-center gap-2 rounded-xl border border-white/45 bg-white/35 px-3 py-2.5 backdrop-blur-xl">
+                        <Lock className="h-4 w-4 shrink-0 text-neutral-400" />
                         <input
                           className="w-full bg-transparent text-base outline-none placeholder:text-neutral-400"
                           placeholder="Enter your password"
@@ -193,13 +189,15 @@ export default function LoginPage() {
 
                     {err && <p className="text-sm text-red-600">{err}</p>}
 
-                    <Button
-                      type="submit"
-                      className="h-12 w-full rounded-2xl border border-[#d8dde7] bg-[#eceef3] text-lg font-semibold text-[#1f2937] shadow-[5px_5px_10px_rgba(168,173,184,0.5),-5px_-5px_10px_rgba(255,255,255,0.95)] hover:bg-[#e7eaf0] active:shadow-[inset_3px_3px_7px_rgba(168,173,184,0.55),inset_-3px_-3px_7px_rgba(255,255,255,0.95)]"
-                      disabled={loading}
-                    >
-                      {loading ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
-                    </Button>
+                    <div className="flex justify-center">
+                      <Button
+                        type="submit"
+                        className="h-12 w-56 rounded-2xl border border-[#d8dde7] bg-[#eceef3] text-lg font-semibold text-[#1f2937] shadow-[5px_5px_10px_rgba(168,173,184,0.5),-5px_-5px_10px_rgba(255,255,255,0.95)] hover:bg-[#e7eaf0] active:shadow-[inset_3px_3px_7px_rgba(168,173,184,0.55),inset_-3px_-3px_7px_rgba(255,255,255,0.95)]"
+                        disabled={loading}
+                      >
+                        {loading ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+                      </Button>
+                    </div>
 
                     <div className="relative pt-2">
                       <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center">
@@ -221,7 +219,7 @@ export default function LoginPage() {
                         aria-label="Continue with Google"
                       >
                         <span className="inline-flex h-5 w-5 items-center justify-center rounded-full">
-                          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                             <path
                               fill="#EA4335"
                               d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3.3 14.7 2.4 12 2.4a9.6 9.6 0 1 0 0 19.2c5.5 0 9.1-3.8 9.1-9.1 0-.6-.1-1-.2-1.4H12Z"
@@ -247,7 +245,34 @@ export default function LoginPage() {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}
-            />
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/35" />
+              <div className="relative flex h-full items-start">
+                <div className="w-full space-y-4 border border-white/35 bg-white/15 p-6 backdrop-blur-md">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/85">
+                    Power AI Platform
+                  </p>
+                  <h2 className="text-3xl font-semibold leading-tight text-white">
+                    Build reports faster from your datasets.
+                  </h2>
+                  <p className="max-w-md text-sm text-white/85">
+                    Connect data, generate insights, and export professional reports with AI support in
+                    one workflow.
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <span className="border border-white/40 bg-white/20 px-3 py-1 text-xs font-medium text-white/90">
+                      AI Insights
+                    </span>
+                    <span className="border border-white/40 bg-white/20 px-3 py-1 text-xs font-medium text-white/90">
+                      PDF + HTML Export
+                    </span>
+                    <span className="border border-white/40 bg-white/20 px-3 py-1 text-xs font-medium text-white/90">
+                      Scheduled Email
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

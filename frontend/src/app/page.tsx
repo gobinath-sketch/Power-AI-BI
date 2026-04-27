@@ -1,10 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MarketingShell } from '@/components/marketing-shell';
-import {
-  Filter,
-  Gauge,
-} from 'lucide-react';
+import { Gauge } from 'lucide-react';
+import { LandingLivePreview } from '@/components/landing-live-preview';
 
 export default function LandingPage() {
   return (
@@ -75,86 +73,7 @@ export default function LandingPage() {
                   </span>
                 </div>
               </div>
-              <div className="grid gap-4 p-5 md:grid-cols-12">
-                <div className="md:col-span-4">
-                  <div className="rounded-2xl border border-border bg-background p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                      KPIs
-                    </p>
-                    <div className="mt-3 grid gap-3">
-                      {[
-                        { k: 'Revenue', v: '$ 1.24M', d: '+8.4%' },
-                        { k: 'Orders', v: '18,420', d: '+3.1%' },
-                        { k: 'Margin', v: '32.8%', d: '-0.6%' },
-                      ].map((x) => (
-                        <div
-                          key={x.k}
-                          className="rounded-xl border border-border bg-card px-4 py-3"
-                        >
-                          <div className="flex items-baseline justify-between gap-3">
-                            <p className="text-sm font-medium">{x.k}</p>
-                            <p className="text-xs text-muted">{x.d}</p>
-                          </div>
-                          <p className="mt-1 text-2xl font-semibold tracking-tight">
-                            {x.v}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="md:col-span-8">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-2xl border border-border bg-background p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Chart
-                      </p>
-                      <div className="mt-3 h-40 rounded-xl border border-border bg-card [background-image:linear-gradient(90deg,rgba(34,211,238,0.10),transparent),linear-gradient(rgba(168,85,247,0.08),transparent)]" />
-                      <p className="mt-3 text-xs text-muted">
-                        Bar/line charts render from real aggregates (no invented rows).
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-background p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        AI Insights
-                      </p>
-                      <div className="mt-3 space-y-2 rounded-xl border border-border bg-card p-4 text-sm">
-                        <p className="font-medium">
-                          “Top category is driving most growth.”
-                        </p>
-                        <p className="text-muted">
-                          The assistant references KPIs + grouped totals and explains anomalies,
-                          trends, and risks.
-                        </p>
-                      </div>
-                      <p className="mt-3 text-xs text-muted">
-                        Chat is embedded in-app (not a separate page).
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 rounded-2xl border border-border bg-background p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Slicers
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Product', 'Region', 'Channel', 'Date'].map((x) => (
-                          <span
-                            key={x}
-                            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted"
-                          >
-                            <Filter className="h-3 w-3 text-muted" />
-                            {x}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <p className="mt-3 text-xs text-muted">
-                      Click a slicer chip to update charts (works in-app and in downloaded HTML).
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <LandingLivePreview />
             </div>
           </div>
         </section>

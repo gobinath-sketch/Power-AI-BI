@@ -1,99 +1,181 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - Power AI BI Platform
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS backend for data ingestion, aggregation, AI analysis, report generation, scheduling, and email delivery.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Responsibilities
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Authenticate/authorize client requests (Supabase JWT validation)
+- Connect to Power BI APIs via Azure AD client credentials
+- Generate reports from Power BI datasets or uploaded Excel data
+- Produce AI insight summaries and answer chat queries
+- Generate PDF exports and interactive report artifacts
+- Schedule recurring report generation and SMTP email delivery
+- Persist operational/report data in Supabase Postgres
 
-## Project setup
+---
+
+## Module Overview
+
+- `auth`: session/user validation endpoints
+- `datasets`: workspace dataset listing/schema/refresh metadata
+- `reports`: report generation, retrieval, export orchestration
+- `chat`: AI question-answering over report context
+- `powerbi`: Power BI API integration + token handling
+- `ai`: OpenAI/OpenRouter integration for insights
+- `pdf`: Puppeteer-powered PDF creation
+- `email`: SMTP delivery service
+- `schedules`: recurring schedule CRUD + processing
+- `jobs`: async job state and downloads
+- `uploads`: Excel upload fallback path
+
+---
+
+## Tech Stack
+
+- NestJS 10 + TypeScript
+- Supabase JS (service-role)
+- Axios
+- OpenAI SDK
+- Nodemailer
+- Puppeteer
+- `@nestjs/schedule`
+- `class-validator` / `class-transformer`
+
+---
+
+## Environment Configuration
+
+Create `backend/.env` from `backend/.env.example`.
+
+### Required groups
+
+- Service URLs and ports
+  - `PORT`
+  - `FRONTEND_URL`
+- Supabase
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `DATABASE_URL`
+- Power BI / Azure AD
+  - `TENANT_ID`
+  - `CLIENT_ID`
+  - `CLIENT_SECRET`
+  - `POWERBI_GROUP_ID`
+- AI
+  - `OPENAI_API_KEY`
+  - `OPENAI_BASE_URL` (OpenRouter-compatible)
+  - `OPENAI_MODEL`
+- SMTP
+  - `SMTP_HOST`
+  - `SMTP_PORT`
+  - `SMTP_SECURE`
+  - `SMTP_USER`
+  - `SMTP_PASS`
+  - `SMTP_FROM`
+- Smoke test helpers
+  - `DEFAULT_REPORT_EMAIL`
+  - `SMOKE_EMAIL`
+  - `SMOKE_PASSWORD`
+
+---
+
+## Run Locally
 
 ```bash
-$ npm install
+cd backend
+npm install
+npm run start:dev
 ```
 
-## Compile and run the project
+API base:
+
+- `http://localhost:3001/api`
+
+Health check:
+
+- `GET /api/health`
+
+---
+
+## Key Scripts
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev
+npm run build
+npm run test
+npm run test:e2e
+npm run smoke
+npm run ensure-smoke-user
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Request Flow (Report Generation)
 
-# e2e tests
-$ npm run test:e2e
+```mermaid
+sequenceDiagram
+  participant UI as Frontend
+  participant API as Backend
+  participant PBI as Power BI
+  participant AI as AI Provider
+  participant DB as Supabase
 
-# test coverage
-$ npm run test:cov
+  UI->>API: POST /reports/generate
+  API->>PBI: Fetch dataset aggregates
+  API->>API: Compute KPIs and chart data
+  API->>AI: Generate insight summary
+  AI-->>API: Structured insight content
+  API->>DB: Persist report
+  API-->>UI: Report payload + id
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Scheduling and Email Flow
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1. Client creates schedule via `/schedules`
+2. Backend persists schedule and checks due jobs via cron
+3. Due schedule triggers report generation
+4. PDF export job is created and processed
+5. Email sent through SMTP with report attachment/link
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Smoke Test Coverage
 
-## Resources
+`npm run smoke` validates:
 
-Check out a few resources that may come in handy when working with NestJS:
+- health
+- auth session
+- datasets (Power BI path) or upload fallback
+- report generation + retrieval
+- chat endpoint
+- email test endpoint
+- schedules lifecycle
+- PDF job completion + file download
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Troubleshooting
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Power BI 401 / unauthorized**:
+  - verify tenant service principal policy
+  - verify admin consent for app permissions
+  - ensure workspace membership for app
+- **SMTP failures**:
+  - check host/port/secure combination
+  - verify app password/provider security settings
+- **PDF failure**:
+  - ensure Puppeteer can launch in your runtime environment
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Security and Production Notes
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Never expose service role keys to frontend
+- Rotate exposed credentials immediately
+- Use environment-specific secrets for dev/stage/prod
+- Add centralized logging/monitoring for production operations
