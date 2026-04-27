@@ -1,4 +1,4 @@
-# AI-Powered Power BI Analytics Platform
+# AI-Powered Power AI Platform
 
 Monorepo layout:
 

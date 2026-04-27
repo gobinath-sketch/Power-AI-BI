@@ -257,7 +257,7 @@ export class PdfService {
       <div class="cards">${chartBlocks || '<div class="card"><div class="cardHeader"><div class="cardTitle">No charts</div></div><div class="note">No numeric/time/category columns detected.</div></div>'}</div>
 
       <div class="footer">
-        <span>AI-Powered Power BI Analytics</span>
+        <span>AI-Powered Power AI</span>
         <span>Prepared for download</span>
       </div>
     </div>

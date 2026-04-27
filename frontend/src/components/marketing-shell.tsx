@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import powerBiLogo from '../../assestimages/New_Power_BI_Logo.svg.png';
 
 const nav = [
   { href: '/features', label: 'Features' },
@@ -26,14 +27,20 @@ export function MarketingShell({
       </div>
 
       <header className="sticky top-0 z-20 border-b border-border/70 bg-background/70 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+        <div className="flex w-full items-center justify-between gap-4 px-6 py-4">
           <Link href="/" className="flex items-center gap-3">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card shadow-soft">
-              <Sparkles className="h-4 w-4 text-foreground" />
+            <span className="inline-flex h-6 w-6 items-center justify-center">
+              <Image
+                src={powerBiLogo}
+                alt="Power BI logo"
+                width={24}
+                height={24}
+                className="h-6 w-6 object-contain"
+              />
             </span>
             <div className="leading-tight">
               <p className="text-sm font-semibold tracking-tight"></p>
-              <p className="text-xs text-muted">AI-Power-BI</p>
+              <p className="text-xs text-muted">Power AI</p>
             </div>
           </Link>
 

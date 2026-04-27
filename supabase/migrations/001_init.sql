@@ -1,4 +1,4 @@
--- AI-Powered Power BI Analytics — core schema (run in Supabase SQL editor)
+-- AI-Powered Power AI — core schema (run in Supabase SQL editor)
 
 create extension if not exists "pgcrypto";
 

@@ -31,27 +31,27 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-soft">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="flex flex-wrap items-center gap-2 text-2xl font-semibold tracking-tight">
+            <h1 className="flex flex-wrap items-center gap-2 text-xl font-semibold tracking-tight">
               <span>Dashboard</span>
               <span className="text-sm font-medium text-neutral-500">·</span>
               <span className="text-sm font-medium text-neutral-600">Datasets from workspace</span>
               <code className="rounded bg-neutral-100 px-1 text-xs">POWERBI_GROUP_ID</code>
             </h1>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2">
+          <div className="flex flex-wrap gap-2">
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5">
               <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
                 <span>Datasets</span>
-                <span className="text-lg font-semibold normal-case text-neutral-900">{datasets.length}</span>
+                <span className="text-base font-semibold normal-case text-neutral-900">{datasets.length}</span>
               </p>
             </div>
-            <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2">
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5">
               <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
                 <span>Recent reports</span>
-                <span className="text-lg font-semibold normal-case text-neutral-900">{(reports ?? []).length}</span>
+                <span className="text-base font-semibold normal-case text-neutral-900">{(reports ?? []).length}</span>
               </p>
             </div>
           </div>

@@ -5,19 +5,19 @@ import { Button } from '@/components/ui/button';
 export default function FaqPage() {
   return (
     <MarketingShell active="/faq">
-      <section className="mx-auto max-w-6xl px-6 pb-12 pt-10 md:pb-16 md:pt-14">
+      <section className="mx-auto h-[calc(100vh-73px)] max-w-6xl overflow-hidden px-6 pb-4 pt-6">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
           FAQ
         </p>
-        <h1 className="mt-4 text-balance text-3xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="mt-3 text-balance text-3xl font-semibold tracking-tight">
           Answers to common questions.
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base text-muted md:text-lg">
+        <p className="mt-3 max-w-2xl text-pretty text-sm text-muted">
           If something looks off, it’s usually Power BI permissions (service principal access) or a missing SMTP config.
           The app is built so you can still test end-to-end using Excel upload while configuring Power BI.
         </p>
 
-        <div className="mt-9 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
           {[
             {
               q: 'Will the AI invent data?',
@@ -44,17 +44,17 @@ export default function FaqPage() {
               a: 'On the backend only (environment variables). The browser never receives Power BI/Azure or AI keys.',
             },
           ].map((x) => (
-            <div key={x.q} className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+            <div key={x.q} className="rounded-2xl border border-border bg-card p-4 shadow-soft">
               <p className="font-semibold">{x.q}</p>
               <p className="mt-2 text-sm leading-relaxed text-muted">{x.a}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-border bg-card px-6 py-5 shadow-soft">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-border bg-card px-5 py-3 shadow-soft">
           <div>
             <p className="text-sm font-semibold">Ready to generate your first report?</p>
-            <p className="mt-1 text-sm text-muted">Sign in and start from datasets or Excel upload.</p>
+            <p className="mt-1 text-xs text-muted">Sign in and start from datasets or Excel upload.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/login">

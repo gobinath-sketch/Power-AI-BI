@@ -35,7 +35,7 @@ export class EmailService {
     const info = await this.smtp.sendMail({
       from,
       to,
-      subject: 'Power BI Analytics — test email',
+      subject: 'Power AI — test email',
       html: '<p>Your SMTP email integration is working.</p>',
     });
     return { ok: true, messageId: info.messageId };
@@ -56,7 +56,7 @@ export class EmailService {
       <h2 style="margin:0 0 12px">${params.reportTitle}</h2>
       ${params.summaryHtml}
       ${link}
-      <p style="color:#64748b;font-size:12px;margin-top:24px">Sent by Power BI Analytics Platform</p>
+      <p style="color:#64748b;font-size:12px;margin-top:24px">Sent by Power AI</p>
     </div>`;
 
     if (!this.smtp) throw new Error('SMTP not configured');

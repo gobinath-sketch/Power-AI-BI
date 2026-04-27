@@ -9,20 +9,13 @@ import {
 export default function LandingPage() {
   return (
     <MarketingShell active="/">
-      <div className="mx-auto max-w-6xl px-6">
-        <section className="mx-auto max-w-6xl px-6 pb-10 pt-12 md:pb-14 md:pt-16">
+      <div className="h-[calc(100vh-73px)] w-full overflow-hidden px-6">
+        <section className="h-full w-full pb-6 pt-4 md:pt-6">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
-              Read-only Power BI · Verified aggregates · AI insights & chat
-            </p>
-            <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight md:text-6xl">
+            <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight md:text-4xl">
               A single-screen dashboard that generates, exports, and delivers reports.
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted md:text-xl">
-              Connect a workspace, pick a dataset, generate KPIs + charts + insights, export
-              professional PDFs, download interactive HTML, and schedule daily email delivery
-              via SMTP.
-            </p>
+           
 
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <Link href="/login">
@@ -56,7 +49,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mx-auto mt-10 max-w-6xl">
+          <div className="mt-10 w-full">
             <div className="rounded-3xl border border-border bg-card shadow-soft">
               <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
                 <div className="flex items-center gap-3">
@@ -166,44 +159,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="pb-12">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
-              Explore
-            </p>
-            <h2 className="mt-3 text-xl font-semibold md:text-2xl">
-              Choose a page to learn more.
-            </h2>
-            <p className="mt-2 text-sm text-muted">
-              The homepage is intentionally short. Details are on dedicated pages.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/features">
-                <Button className="rounded-full">Features</Button>
-              </Link>
-              <Link href="/workflow">
-                <Button variant="outline" className="rounded-full">
-                  Workflow
-                </Button>
-              </Link>
-              <Link href="/exports">
-                <Button variant="outline" className="rounded-full">
-                  Exports
-                </Button>
-              </Link>
-              <Link href="/security">
-                <Button variant="outline" className="rounded-full">
-                  Security
-                </Button>
-              </Link>
-              <Link href="/faq">
-                <Button variant="outline" className="rounded-full">
-                  FAQ
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
       </div>
     </MarketingShell>
   );
