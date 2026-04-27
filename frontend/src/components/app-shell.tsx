@@ -63,7 +63,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
         </header>
-        <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+        <main className="w-full px-6 py-8">{children}</main>
       </div>
       <ChatDock token={session.access_token} />
     </div>
