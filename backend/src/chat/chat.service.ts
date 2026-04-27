@@ -64,7 +64,7 @@ export class ChatService {
         intent: 'unclear',
         confidence,
         clarify:
-          'Should I focus on trends over time, comparisons between categories, anomalies/spikes, or a top/bottom ranking?',
+          'Hi,How can I help you today?',
       };
     }
 
