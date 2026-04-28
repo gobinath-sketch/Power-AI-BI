@@ -100,7 +100,7 @@ export default async function ReportPage({ params }: { params: { id: string } })
                 <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
                   {k.label}
                 </p>
-                <p className="mt-2 text-2xl font-semibold tabular-nums">{k.value}</p>
+                <p className="mt-2 text-2xl font-semibold tabular-nums font-ui">{k.value}</p>
                 {k.hint && <p className="mt-1 text-xs text-neutral-500">{k.hint}</p>}
               </div>
             ))}
@@ -118,11 +118,11 @@ export default async function ReportPage({ params }: { params: { id: string } })
                 AI insight
               </h2>
               <div className="mt-3 space-y-3">
-                <p className="text-sm leading-relaxed text-neutral-800">
+                <p className="font-ui text-sm leading-relaxed text-neutral-800">
                   {insights?.summary ?? 'AI insight is not available for this report.'}
                 </p>
                 {(insights?.recommendations?.length ?? 0) > 0 && (
-                  <ul className="list-disc space-y-1 pl-5 text-sm text-neutral-700">
+                  <ul className="font-ui list-disc space-y-1 pl-5 text-sm text-neutral-700">
                     {insights?.recommendations?.map((x, i) => (
                       <li key={i}>{x}</li>
                     ))}
@@ -135,7 +135,7 @@ export default async function ReportPage({ params }: { params: { id: string } })
               <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
                 Report metadata
               </p>
-              <div className="mt-3 space-y-2">
+              <div className="mt-3 space-y-2 font-ui">
                 <p>
                   <span className="font-medium text-neutral-900">Dataset:</span>{' '}
                   {payload.datasetName ?? 'Dataset'}

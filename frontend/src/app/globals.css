@@ -16,6 +16,14 @@ body {
   font-weight: 700;
 }
 
+.font-ui {
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif !important;
+  font-style: normal !important;
+}
+
 @layer base {
   .tabular-nums,
   input,
@@ -28,6 +36,11 @@ body {
   svg text,
   text {
     font-weight: 400 !important;
+    font-family:
+      Arial,
+      Helvetica,
+      sans-serif !important;
+    font-style: normal !important;
   }
 }
 
