@@ -38,6 +38,7 @@ export interface ReportPayload {
   charts: ChartSpec[];
   /** Aggregated / downsampled only — never full raw dump for huge sets */
   sampleRows: Record<string, unknown>[];
+  sampleRowsTruncated?: boolean;
   stats: {
     numericSummaries: Record<string, { min: number; max: number; sum: number; avg: number }>;
     nullRate: Record<string, number>;
@@ -69,7 +70,7 @@ export class AggregationService {
     const colNames = columns.map((c) => c.name);
     const dateCol = this.pickDateColumn(colNames, rows);
     const numericCols = this.pickNumericColumns(colNames, rows, dateCol);
-    const categoryCol = this.pickCategoryColumn(colNames, rows, dateCol, numericCols[0]);
+    const categoryCols = this.pickCategoryColumns(colNames, rows, dateCol, numericCols[0]).slice(0, 2);
 
     const numericSummaries: ReportPayload['stats']['numericSummaries'] = {};
     const nullRate: Record<string, number> = {};
@@ -108,36 +109,45 @@ export class AggregationService {
 
     const charts: ChartSpec[] = [];
 
-    if (dateCol && numericCols[0]) {
-      const points = this.buildTimeSeries(rows, dateCol, numericCols[0]);
-      const down = this.downsample(points, TIMESERIES_MAX_POINTS);
-      charts.push({
-        id: 'chart-trend',
-        title: `${numericCols[0]} over ${dateCol}`,
-        kind: 'line',
-        xKey: dateCol,
-        yKey: numericCols[0],
-        series: {
-          name: numericCols[0],
-          points: down,
-        },
-      });
+    // Build multiple trend charts from available measures so more source detail is visible.
+    if (dateCol && numericCols.length) {
+      for (const measure of numericCols.slice(0, 3)) {
+        const points = this.buildTimeSeries(rows, dateCol, measure);
+        if (!points.length) continue;
+        const down = this.downsample(points, TIMESERIES_MAX_POINTS);
+        charts.push({
+          id: `chart-trend-${measure}`,
+          title: `${measure} over ${dateCol}`,
+          kind: 'line',
+          xKey: dateCol,
+          yKey: measure,
+          series: {
+            name: measure,
+            points: down,
+          },
+        });
+      }
     }
 
-    if (categoryCol && numericCols[0]) {
-      const agg = this.aggregateCategory(rows, categoryCol, numericCols[0], CHART_TOP_N);
-      charts.push({
-        id: 'chart-cat',
-        title: `Top ${CHART_TOP_N} · ${categoryCol}`,
-        kind: agg.length <= 6 ? 'pie' : 'bar',
-        xKey: categoryCol,
-        yKey: numericCols[0],
-        categories: agg,
-        note:
-          agg.some((a) => a.name === 'Other') && rowCount > CHART_TOP_N
-            ? `Other aggregates remaining categories beyond top ${CHART_TOP_N}`
-            : undefined,
-      });
+    if (categoryCols.length && numericCols.length) {
+      for (const categoryCol of categoryCols) {
+        for (const measure of numericCols.slice(0, 2)) {
+          const agg = this.aggregateCategory(rows, categoryCol, measure, CHART_TOP_N);
+          if (!agg.length) continue;
+          charts.push({
+            id: `chart-cat-${categoryCol}-${measure}`,
+            title: `${measure} by ${categoryCol} (Top ${CHART_TOP_N})`,
+            kind: agg.length <= 6 ? 'pie' : 'bar',
+            xKey: categoryCol,
+            yKey: measure,
+            categories: agg,
+            note:
+              agg.some((a) => a.name === 'Other') && rowCount > CHART_TOP_N
+                ? `Other aggregates remaining categories beyond top ${CHART_TOP_N}`
+                : undefined,
+          });
+        }
+      }
     }
 
     if (!charts.length && numericCols.length >= 2) {
@@ -163,7 +173,9 @@ export class AggregationService {
       });
     }
 
-    const sampleRows = rows.slice(0, Math.min(50, rows.length));
+    const sampleLimit = 1000;
+    const sampleRows = rows.slice(0, Math.min(sampleLimit, rows.length));
+    const sampleRowsTruncated = rows.length > sampleLimit;
 
     return {
       datasetId: params.datasetId,
@@ -176,6 +188,7 @@ export class AggregationService {
       kpis,
       charts,
       sampleRows,
+      sampleRowsTruncated,
       stats: { numericSummaries, nullRate },
       generatedAt: new Date().toISOString(),
     };
@@ -225,24 +238,37 @@ export class AggregationService {
       const nums = rows.filter((r) => typeof r[n] === 'number' && !Number.isNaN(r[n] as number));
       if (nums.length > rows.length * 0.3) out.push(n);
     }
-    return out.slice(0, 4);
+    return out.slice(0, 8);
   }
 
-  private pickCategoryColumn(
+  private pickCategoryColumns(
     names: string[],
     rows: Record<string, unknown>[],
     skipDate?: string,
     skipMeasure?: string,
-  ): string | undefined {
+  ): string[] {
+    const scored: { name: string; score: number }[] = [];
     for (const n of names) {
+      const vals = rows.map((r) => r[n]).filter((v) => v !== null && v !== undefined && v !== '');
+      if (!vals.length) continue;
       if (n === skipDate || n === skipMeasure) continue;
-      const distinct = new Set(rows.map((r) => String(r[n] ?? '')));
+
+      const numericRatio = vals.filter((v) => typeof v === 'number').length / vals.length;
+      // keep mostly non-numeric dimensions
+      if (numericRatio > 0.6) continue;
+
+      const stringRatio = vals.filter((v) => typeof v === 'string').length / vals.length;
+      const distinct = new Set(vals.map((v) => String(v)));
       const d = distinct.size;
-      if (d > 1 && d <= Math.min(500, rows.length) && d < rows.length * 0.9) {
-        return n;
-      }
+      if (!(d > 1 && d <= Math.min(500, rows.length) && d < rows.length * 0.95)) continue;
+
+      // Prefer useful mid-cardinality dimensions, but purely from data shape (no name rules).
+      const target = Math.max(3, Math.sqrt(rows.length));
+      const cardinalityFit = 1 / (1 + Math.abs(d - target));
+      const score = stringRatio * 0.6 + cardinalityFit * 0.4;
+      scored.push({ name: n, score });
     }
-    return undefined;
+    return scored.sort((a, b) => b.score - a.score).map((s) => s.name);
   }
 
   private buildTimeSeries(

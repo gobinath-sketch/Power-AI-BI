@@ -8,6 +8,8 @@ type Payload = {
   sampleRows?: Record<string, unknown>[];
   kpis?: { id: string; label: string; value: string | number; hint?: string }[];
   charts?: Chart[];
+  rowCount?: number;
+  sampleRowsTruncated?: boolean;
 };
 
 type Chart = {
@@ -32,20 +34,26 @@ export function InteractiveReport({ payload }: { payload: Payload }) {
   const rows = useMemo(() => payload.sampleRows ?? [], [payload.sampleRows]);
   const cols = useMemo(() => payload.columns ?? [], [payload.columns]);
 
-  const categoryColumn = useMemo(() => {
-    // pick the first string-ish column with reasonable distinct count
+  const categoryCandidates = useMemo(() => {
     const names = cols.map((c) => c.name);
+    const out: string[] = [];
     for (const n of names) {
-      const vals = rows.map((r) => r[n]).filter((v) => v !== null && v !== undefined);
+      const vals = rows
+        .map((r) => r[n])
+        .filter((v) => v !== null && v !== undefined && v !== '');
       if (!vals.length) continue;
+      const numericRatio = vals.filter((v) => typeof v === 'number').length / vals.length;
+      if (numericRatio > 0.6) continue;
       const distinct = new Set(vals.map((v) => String(v)));
-      if (distinct.size >= 2 && distinct.size <= Math.min(40, vals.length)) return n;
+      if (distinct.size >= 2 && distinct.size <= Math.min(200, vals.length)) out.push(n);
     }
-    return null;
+    return out;
   }, [rows, cols]);
 
+  const [categoryColumn, setCategoryColumn] = useState<string>('None');
+
   const categoryValues = useMemo(() => {
-    if (!categoryColumn) return [];
+    if (!categoryColumn || categoryColumn === 'None') return [];
     const distinct = new Set(rows.map((r) => String(r[categoryColumn] ?? '—')));
     return ['All', ...Array.from(distinct).slice(0, 200)];
   }, [rows, categoryColumn]);
@@ -53,7 +61,7 @@ export function InteractiveReport({ payload }: { payload: Payload }) {
   const [category, setCategory] = useState('All');
 
   const filtered = useMemo(() => {
-    if (!categoryColumn || category === 'All') return rows;
+    if (!categoryColumn || categoryColumn === 'None' || category === 'All') return rows;
     return rows.filter((r) => String(r[categoryColumn] ?? '—') === category);
   }, [rows, category, categoryColumn]);
 
@@ -61,52 +69,63 @@ export function InteractiveReport({ payload }: { payload: Payload }) {
     // Use existing charts if we can't safely recompute.
     if (!filtered.length) return payload.charts ?? [];
 
-    // Try: find a date column and a numeric measure for a trend chart
+    // Try: find a date column and multiple numeric measures for richer charting
     const names = cols.map((c) => c.name);
     const dateCol = names.find((n) => filtered.some((r) => looksDate(r[n])));
-    const numeric = names.find((n) => filtered.filter((r) => isNumber(r[n])).length > filtered.length * 0.3);
+    const numericCols = names.filter(
+      (n) => filtered.filter((r) => isNumber(r[n])).length > filtered.length * 0.3,
+    );
 
     const charts: Chart[] = [];
-    if (dateCol && numeric) {
-      const pts = filtered
-        .map((r) => ({ x: String(r[dateCol]), y: Number(r[numeric]) }))
-        .filter((p) => !Number.isNaN(Date.parse(p.x)) && !Number.isNaN(p.y))
-        .sort((a, b) => Date.parse(a.x) - Date.parse(b.x))
-        .slice(0, 400);
-      charts.push({
-        id: 'trend-filtered',
-        title: `${numeric} over ${dateCol}${category !== 'All' ? ` · ${category}` : ''}`,
-        kind: 'line',
-        yKey: numeric,
-        series: { points: pts },
-      });
+    if (dateCol && numericCols.length) {
+      for (const numeric of numericCols.slice(0, 3)) {
+        const pts = filtered
+          .map((r) => ({ x: String(r[dateCol]), y: Number(r[numeric]) }))
+          .filter((p) => !Number.isNaN(Date.parse(p.x)) && !Number.isNaN(p.y))
+          .sort((a, b) => Date.parse(a.x) - Date.parse(b.x))
+          .slice(0, 1200);
+        if (!pts.length) continue;
+        charts.push({
+          id: `trend-filtered-${numeric}`,
+          title: `${numeric} over ${dateCol}${category !== 'All' ? ` · ${category}` : ''}`,
+          kind: 'line',
+          xKey: dateCol,
+          yKey: numeric,
+          series: { points: pts },
+        });
+      }
     }
 
-    if (categoryColumn && numeric) {
-      const map = new Map<string, number>();
-      for (const r of filtered) {
-        const k = String(r[categoryColumn] ?? '—');
-        const v = Number(r[numeric]);
-        if (Number.isNaN(v)) continue;
-        map.set(k, (map.get(k) ?? 0) + v);
+    if (categoryColumn && categoryColumn !== 'None' && numericCols.length) {
+      for (const numeric of numericCols.slice(0, 3)) {
+        const map = new Map<string, number>();
+        for (const r of filtered) {
+          const k = String(r[categoryColumn] ?? '—');
+          const v = Number(r[numeric]);
+          if (Number.isNaN(v)) continue;
+          map.set(k, (map.get(k) ?? 0) + v);
+        }
+        const cats = Array.from(map.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 12)
+          .map(([name, value]) => ({ name, value }));
+        if (!cats.length) continue;
+        charts.push({
+          id: `cat-filtered-${numeric}`,
+          title: `${numeric} by ${categoryColumn}`,
+          kind: cats.length <= 6 ? 'pie' : 'bar',
+          xKey: categoryColumn,
+          yKey: numeric,
+          categories: cats,
+        });
       }
-      const cats = Array.from(map.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 12)
-        .map(([name, value]) => ({ name, value }));
-      charts.push({
-        id: 'cat-filtered',
-        title: `${numeric} by ${categoryColumn}`,
-        kind: cats.length <= 6 ? 'pie' : 'bar',
-        categories: cats,
-      });
     }
 
     return charts.length ? charts : (payload.charts ?? []);
   }, [filtered, payload.charts, cols, categoryColumn, category]);
 
   return (
-    <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
@@ -115,29 +134,35 @@ export function InteractiveReport({ payload }: { payload: Payload }) {
           <p className="mt-1 text-sm text-neutral-600">
             Click a slice/bar to cross-filter all charts. Uses the report’s saved sample rows (no hidden filtering).
           </p>
+          {payload.sampleRowsTruncated && (
+            <p className="mt-1 text-xs text-amber-700">
+              Showing first {rows.length} rows in interactive mode (large dataset optimization).
+            </p>
+          )}
         </div>
         {categoryColumn && (
-          <div className="min-w-[240px]">
-            <label className="text-xs font-medium text-neutral-600">Slicer · {categoryColumn}</label>
+          <div className="min-w-[320px]">
+            <label className="text-xs font-medium text-neutral-600">Slicer dimension</label>
             <div className="mt-2 flex flex-wrap gap-2">
-              {categoryValues.slice(0, 10).map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setCategory(v)}
-                  className={[
-                    'rounded-full border px-3 py-1 text-xs transition',
-                    v === category
-                      ? 'border-neutral-900 bg-neutral-900 text-white'
-                      : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50',
-                  ].join(' ')}
-                >
-                  {v}
-                </button>
-              ))}
-              {categoryValues.length > 10 && (
+              <select
+                className="border border-neutral-200 bg-white px-3 py-1.5 text-xs"
+                value={categoryColumn}
+                onChange={(e) => {
+                  setCategoryColumn(e.target.value);
+                  setCategory('All');
+                }}
+              >
+                <option value="None">None</option>
+                {categoryCandidates.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+
+              {categoryColumn !== 'None' && (
                 <select
-                  className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs"
+                  className="border border-neutral-200 bg-white px-3 py-1.5 text-xs"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >

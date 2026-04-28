@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Lock, Mail } from 'lucide-react';
@@ -19,6 +20,20 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+      },
+    });
+    if (error) setErr(error.message);
+    setLoading(false);
+  }
+
+  async function outlook() {
+    setLoading(true);
+    setErr(null);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'azure',
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
@@ -108,8 +123,8 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <div className="mx-auto w-full max-w-lg">
-                <div className="rounded-[26px] border border-white/40 bg-white/40 p-6 shadow-soft backdrop-blur-xl ring-1 ring-white/30">
+              <div className="mx-auto w-full max-w-sm">
+                <div className="min-h-[540px] rounded-[26px] border border-white/40 bg-white/40 p-6 shadow-soft backdrop-blur-xl ring-1 ring-white/30">
                   <div className="text-center">
                     <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
                       Welcome back
@@ -205,31 +220,45 @@ export default function LoginPage() {
                       </div>
                       <div className="relative flex justify-center">
                         <span className="rounded-full border border-neutral-200/70 bg-white/80 px-4 py-1 text-xs font-medium tracking-wide text-neutral-600 backdrop-blur-sm">
-                          Or continue with Google
+                          Or continue with Below
                         </span>
                       </div>
                     </div>
 
                     <div className="pt-3">
-                      <Button
+                      <div className="mx-auto flex items-center justify-center gap-3">
+                      <button
                         type="button"
-                        className="mx-auto flex h-12 w-20 items-center justify-center rounded-2xl border border-[#d8dde7] bg-[#eceef3] shadow-[4px_4px_9px_rgba(168,173,184,0.5),-4px_-4px_9px_rgba(255,255,255,0.95)] hover:bg-[#e7eaf0] active:shadow-[inset_3px_3px_7px_rgba(168,173,184,0.55),inset_-3px_-3px_7px_rgba(255,255,255,0.95)]"
+                        className="block transition-opacity hover:opacity-90 disabled:opacity-60"
                         onClick={google}
                         disabled={loading}
                         aria-label="Continue with Google"
                       >
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full">
-                          <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-                            <path
-                              fill="#EA4335"
-                              d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3.3 14.7 2.4 12 2.4a9.6 9.6 0 1 0 0 19.2c5.5 0 9.1-3.8 9.1-9.1 0-.6-.1-1-.2-1.4H12Z"
-                            />
-                            <path fill="#34A853" d="M3.3 7.8 6.5 10.1A6 6 0 0 1 12 6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3.3 14.7 2.4 12 2.4A9.5 9.5 0 0 0 3.3 7.8Z" />
-                            <path fill="#FBBC05" d="M12 21.6c2.6 0 4.8-.9 6.4-2.4l-3-2.3c-.8.6-1.8 1-3.4 1-2.7 0-5-1.8-5.8-4.4l-3.1 2.4A9.6 9.6 0 0 0 12 21.6Z" />
-                            <path fill="#4285F4" d="M21.1 12.5c0-.6-.1-1-.2-1.4H12v3.9h5.5c-.3 1-1 1.9-2 2.6l3 2.3c1.8-1.7 2.8-4.1 2.8-7.4Z" />
-                          </svg>
-                        </span>
-                      </Button>
+                        <Image
+                          src="/google-logo-search-new-svgrepo-com.svg"
+                          alt="Google"
+                          width={20}
+                          height={20}
+                          className="h-[30px] w-[30px]"
+                        />
+                      </button>
+                      <span className="text-2xl font-semibold leading-none text-neutral-500">/</span>
+                      <button
+                        type="button"
+                        className="block transition-opacity hover:opacity-90 disabled:opacity-60"
+                        onClick={outlook}
+                        disabled={loading}
+                        aria-label="Outlook"
+                      >
+                        <Image
+                          src="/ms-outlook-svgrepo-com.svg"
+                          alt="Outlook"
+                          width={20}
+                          height={20}
+                          className="h-[30px] w-[30px]"
+                        />
+                      </button>
+                      </div>
                   </div>
                   </form>
                 </div>

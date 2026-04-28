@@ -13,6 +13,22 @@
 body {
   color: var(--foreground);
   background: var(--background);
+  font-weight: 700;
+}
+
+@layer base {
+  .tabular-nums,
+  input,
+  textarea,
+  select,
+  .recharts-text,
+  .recharts-cartesian-axis-tick-value,
+  .recharts-label,
+  .recharts-tooltip-wrapper,
+  svg text,
+  text {
+    font-weight: 400 !important;
+  }
 }
 
 @layer base {

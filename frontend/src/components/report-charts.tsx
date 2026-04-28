@@ -13,6 +13,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Label,
 } from 'recharts';
 
 const COLORS = ['#171717', '#525252', '#a3a3a3', '#d4d4d4', '#e5e5e5', '#f5f5f5'];
@@ -46,17 +47,43 @@ export function ReportCharts({
   }
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-4 lg:grid-cols-2">
       {charts.map((c) => (
-        <div key={c.id} className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
-          <h3 className="text-sm font-semibold text-neutral-900">{c.title}</h3>
-          <div className="mt-4 h-72 w-full">
+        <div key={c.id} className="border border-neutral-200 bg-white p-4 shadow-soft">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-neutral-900">{c.title}</h3>
+              <p className="mt-1 text-xs text-neutral-500">
+                {c.kind === 'line' && `Trend chart · X: ${c.xKey} · Y: ${c.yKey ?? 'Value'}`}
+                {c.kind === 'bar' && `Bar chart · X: ${c.xKey} · Y: ${c.yKey ?? 'Value'}`}
+                {c.kind === 'pie' && `Distribution chart · Group: ${c.xKey} · Measure: ${c.yKey ?? 'Value'}`}
+              </p>
+            </div>
+            <span className="border border-neutral-200 bg-neutral-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-600">
+              {c.kind}
+            </span>
+          </div>
+          <div className="mt-3 h-56 w-full">
             {c.kind === 'line' && c.series && (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={c.series.points.map((p) => ({ name: p.x, v: p.y }))}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#888" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="#888" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#888">
+                    <Label
+                      value={c.xKey || 'X Axis'}
+                      offset={-2}
+                      position="insideBottom"
+                      style={{ fill: '#666', fontSize: 11 }}
+                    />
+                  </XAxis>
+                  <YAxis tick={{ fontSize: 11 }} stroke="#888">
+                    <Label
+                      value={c.yKey || 'Value'}
+                      angle={-90}
+                      position="insideLeft"
+                      style={{ fill: '#666', fontSize: 11, textAnchor: 'middle' }}
+                    />
+                  </YAxis>
                   <Tooltip />
                   <Line type="monotone" dataKey="v" stroke="#171717" strokeWidth={2} dot={false} />
                 </LineChart>
@@ -66,8 +93,22 @@ export function ReportCharts({
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={c.categories}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#888" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="#888" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#888">
+                    <Label
+                      value={c.xKey || 'Category'}
+                      offset={-2}
+                      position="insideBottom"
+                      style={{ fill: '#666', fontSize: 11 }}
+                    />
+                  </XAxis>
+                  <YAxis tick={{ fontSize: 11 }} stroke="#888">
+                    <Label
+                      value={c.yKey || 'Value'}
+                      angle={-90}
+                      position="insideLeft"
+                      style={{ fill: '#666', fontSize: 11, textAnchor: 'middle' }}
+                    />
+                  </YAxis>
                   <Tooltip />
                   <Bar
                     dataKey="value"
@@ -122,6 +163,12 @@ export function ReportCharts({
                 </PieChart>
               </ResponsiveContainer>
             )}
+          </div>
+          <div className="mt-2 space-y-1">
+            {c.note && <p className="text-xs text-neutral-500">{c.note}</p>}
+            <p className="text-[11px] text-neutral-400">
+              Tip: Hover data points for exact values.
+            </p>
           </div>
         </div>
       ))}
